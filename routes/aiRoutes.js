@@ -134,10 +134,11 @@ router.post("/detect", authMiddleware, async (req, res, next) => {
     const text = body?.candidates?.[0]?.content?.parts?.[0]?.text;
     const detection = parseGeminiJson(typeof text === "string" ? text : "");
     const ref = db.collection("aiDetections").doc();
+    const uid = req.user?.uid || "prototype_user";
 
     await ref.set({
       detectionId: ref.id,
-      userId: req.user.uid,
+      userId: uid,
       imageUrl,
       ...detection,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),

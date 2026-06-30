@@ -164,12 +164,13 @@ router.post("/:requestId/cancel", authMiddleware, async (req, res, next) => {
     if (!snapshot.exists) return res.status(404).json({ error: "Request not found." });
 
     const pickup = snapshot.data();
+    const uid = req.user?.uid || "prototype_user";
     const [userProfile, collectorProfile] = await Promise.all([
-      loadUserProfile(req.user.uid),
-      loadCollectorProfile(req.user.uid),
+      loadUserProfile(uid),
+      loadCollectorProfile(uid),
     ]);
-    const isOwnerUser = userProfile?.role === "user" && pickup.userId === req.user.uid && pickup.status === "open";
-    const isAssignedCollector = Boolean(collectorProfile) && pickup.collectorId === req.user.uid && pickup.status === "accepted";
+    const isOwnerUser = userProfile?.role === "user" && pickup.userId === uid && pickup.status === "open";
+    const isAssignedCollector = Boolean(collectorProfile) && pickup.collectorId === uid && pickup.status === "accepted";
 
     if (!isOwnerUser && !isAssignedCollector) {
       return res.status(403).json({ error: "You cannot cancel this request." });

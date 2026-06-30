@@ -7,9 +7,10 @@ const router = express.Router();
 
 router.get("/my-requests", authMiddleware, requireUser, async (req, res, next) => {
   try {
+    const uid = req.profile?.uid || req.user?.uid || "prototype_user";
     const snapshot = await db
       .collection("requests")
-      .where("userId", "==", req.user.uid)
+      .where("userId", "==", uid)
       .orderBy("createdAt", "desc")
       .get();
 
